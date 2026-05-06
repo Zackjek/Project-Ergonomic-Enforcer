@@ -1,11 +1,15 @@
-// GANTI LINK DI BAWAH INI DENGAN LINK MODELMU SENDIRI
-const URL = "https://teachablemachine.withgoogle.com/models/bsc2_-vUS/"; // <--
+// === LINK MODEL SUDAH BENAR ===
+const URL = "https://teachablemachine.withgoogle.com/models/bsc2_-vUS/";
 
 let model, webcam, ctx, labelContainer, maxPredictions;
 
 const workspace = document.getElementById("workspace");
 const statusText = document.getElementById("status-text");
 const videoElem = document.getElementById("learning-video");
+
+// --- VARIABEL STATISTIK WAKTU (Sinkronisasi UI) ---
+let waktuAktifDetik = 0;
+let intervalWaktuAktif = null;
 
 // --- VARIABEL ALARM POSTUR ---
 const alarmSound = new Audio('alarm.mp3');
@@ -17,32 +21,58 @@ const waktuTungguAlarm = 5000; // 5000 = 5 detik tunggu sebelum alarm bunyi
 // --- VARIABEL STRETCHING ---
 const stretchOverlay = document.getElementById("stretch-overlay");
 const stretchTimerText = document.getElementById("stretch-timer");
-// Kalau mau ngetes pop-upnya cepet, ubah angka di bawah jadi 10000 (10 detik)
-const intervalPeregangan = 5000; // 5 detik dalam milidetik
+
+// SETTING PEREGANGAN: Muncul setiap 10 detik, selama 15 detik
+const intervalPeregangan = 10000; // 10 Detik (10 x 1000 milidetik)
 const durasiPaksa = 15; // 15 Detik pop-up muncul
 
 async function init() {
     const modelURL = URL + "model.json";
     const metadataURL = URL + "metadata.json";
 
-    model = await tmPose.load(modelURL, metadataURL);
-    maxPredictions = model.getTotalClasses();
+    // Matikan tombol sementara saat loading model
+    const btn = document.querySelector("button");
+    if(btn) {
+        btn.innerText = "Memuat Model...";
+        btn.disabled = true;
+    }
 
-    const size = 300;
-    const flip = true; 
-    webcam = new tmPose.Webcam(size, size, flip);
-    await webcam.setup(); 
-    await webcam.play();
-    window.requestAnimationFrame(loop);
+    try {
+        model = await tmPose.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
 
-    const canvas = document.getElementById("canvas");
-    canvas.width = size; canvas.height = size;
-    ctx = canvas.getContext("2d");
-    
-    statusText.innerText = "Sistem Aktif";
+        const size = 300;
+        const flip = true; 
+        webcam = new tmPose.Webcam(size, size, flip);
+        await webcam.setup(); 
+        await webcam.play();
+        window.requestAnimationFrame(loop);
 
-    // Mulai hitung waktu untuk Pop-up Peregangan
-    mulaiJadwalPeregangan();
+        const canvas = document.getElementById("canvas");
+        if(canvas) {
+            canvas.width = size; canvas.height = size;
+            ctx = canvas.getContext("2d");
+        }
+        
+        statusText.innerText = "Sistem Aktif - Aman";
+        statusText.className = "status-aman";
+        if(btn) {
+            btn.innerText = "Pengawasan Aktif";
+        }
+
+        // Mulai hitung stopwatch sesi & jadwal peregangan
+        mulaiWaktuAktif();
+        mulaiJadwalPeregangan();
+        
+    } catch (error) {
+        console.error("Gagal memuat model:", error);
+        statusText.innerText = "Gagal memuat model. Cek Console (F12).";
+        statusText.className = "status-bahaya";
+        if(btn) {
+            btn.innerText = "Mulai Pengawasan";
+            btn.disabled = false;
+        }
+    }
 }
 
 async function loop(timestamp) {
@@ -65,12 +95,20 @@ async function predict() {
         }
     }
 
+    // Mengambil elemen "Ya/Tidak" dari panel Statistik
+    const statPosturElem = document.querySelector(".stats-card ul li:nth-child(2) span:last-child");
+
     // --- LOGIKA INTERVENSI ---
-    // Pastikan nama kelas sesuai dengan model aslimu ("normal", "bungkuk", "terlaludekat")
     if (currentPosture === "normal") {
         statusText.innerText = "Normal - Aman";
         statusText.className = "status-aman";
         workspace.classList.remove("blur-effect");
+        
+        // Update statistik sinkron ke "Ya"
+        if(statPosturElem) {
+            statPosturElem.innerText = "Ya";
+            statPosturElem.style.color = "#166534";
+        }
         
         // Batalkan alarm jika kembali normal sebelum 5 detik
         if (isPostureBad) {
@@ -85,6 +123,12 @@ async function predict() {
         statusText.className = "status-bahaya";
         workspace.classList.add("blur-effect");
         
+        // Update statistik sinkron ke "Tidak"
+        if(statPosturElem) {
+            statPosturElem.innerText = "Tidak";
+            statPosturElem.style.color = "#991b1b";
+        }
+        
         if (!videoElem.paused) {
             videoElem.pause();
         }
@@ -94,7 +138,7 @@ async function predict() {
             isPostureBad = true; 
             alarmTimer = setTimeout(() => {
                 if (alarmSound.paused) {
-                    alarmSound.play();
+                    alarmSound.play().catch(e => console.log("Auto-play alarm dicegah browser."));
                 }
             }, waktuTungguAlarm);
         }
@@ -112,6 +156,26 @@ function drawPose(pose) {
             tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx);
         }
     }
+}
+
+// --- FUNGSI STOPWATCH SESI ---
+function mulaiWaktuAktif() {
+    const sessionTimeText = document.getElementById("session-time");
+    if(!sessionTimeText) return;
+    
+    waktuAktifDetik = 0;
+    if (intervalWaktuAktif) clearInterval(intervalWaktuAktif);
+
+    intervalWaktuAktif = setInterval(() => {
+        waktuAktifDetik++;
+        let menit = Math.floor(waktuAktifDetik / 60);
+        let detik = waktuAktifDetik % 60;
+        
+        let stringMenit = menit < 10 ? "0" + menit : menit;
+        let stringDetik = detik < 10 ? "0" + detik : detik;
+        
+        sessionTimeText.innerText = `${stringMenit}:${stringDetik}`;
+    }, 1000); 
 }
 
 // --- FUNGSI STRETCHING ENFORCER ---
