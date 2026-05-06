@@ -18,7 +18,7 @@ const waktuTungguAlarm = 5000; // 5000 = 5 detik tunggu sebelum alarm bunyi
 const stretchOverlay = document.getElementById("stretch-overlay");
 const stretchTimerText = document.getElementById("stretch-timer");
 // Kalau mau ngetes pop-upnya cepet, ubah angka di bawah jadi 10000 (10 detik)
-const intervalPeregangan = 5000; // 30 Menit dalam milidetik
+const intervalPeregangan = 5000; // 5 detik dalam milidetik
 const durasiPaksa = 15; // 15 Detik pop-up muncul
 
 async function init() {
