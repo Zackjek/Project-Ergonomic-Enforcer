@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ergonomic Enforcer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Ergonomic Enforcer</h1>
+        <div id="status-bar">Status Postur: <span id="status-text">Menunggu Kamera...</span></div>
+    </header>
+
+    <main class="container">
+        <aside class="camera-section">
+            <button type="button" onclick="init()">Mulai Pengawasan</button>
+            <div id="camera-container">
+                <canvas id="canvas"></canvas>
+            </div>
+        </aside>
+
+        <section id="workspace" class="workspace">
+            <h2>Area Kerja / Belajar</h2>
+            <p>Fokuslah pada pekerjaanmu. Jika postur memburuk, layar ini akan mengabur.</p>
+            <video id="learning-video" controls width="100%">
+                <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                Browser Anda tidak mendukung video HTML5.
+            </video>
+        </section>
+    </main>
+
+    <!-- Overlay Paksaan Peregangan (Pop-up) -->
+    <div id="stretch-overlay" class="hidden">
+        <div class="stretch-content">
+            <!-- Gambar GIF Ilustrasi Stretching -->
+            <img src="https://media.giphy.com/media/3o7TKrEzvLbgqLjVWw/giphy.gif" alt="Stretching" width="250" style="border-radius: 15px; margin-bottom: 20px;">
+            <h1 style="font-size: 3rem; color: #ff4757;">Waktunya Peregangan Wajib!</h1>
+            <p style="font-size: 1.5rem;">Sistem dikunci. Berdiri dan renggangkan ototmu.</p>
+            <p style="font-size: 2rem;">Membuka kembali dalam: <span id="stretch-timer">15</span> detik</p>
+        </div>
+    </div>
+
+    <!-- Library TensorFlow.js dan Teachable Machine Pose -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/pose@0.8/dist/teachablemachine-pose.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
