@@ -1,5 +1,5 @@
 // GANTI LINK DI BAWAH INI DENGAN LINK MODELMU SENDIRI
-const URL = "https://teachablemachine.withgoogle.com/models/LINK_MODELMU_DISINI/";
+const URL = "https://teachablemachine.withgoogle.com/models/bsc2_-vUS/"; // <--
 
 let model, webcam, ctx, labelContainer, maxPredictions;
 
@@ -18,7 +18,7 @@ const waktuTungguAlarm = 5000; // 5000 = 5 detik tunggu sebelum alarm bunyi
 const stretchOverlay = document.getElementById("stretch-overlay");
 const stretchTimerText = document.getElementById("stretch-timer");
 // Kalau mau ngetes pop-upnya cepet, ubah angka di bawah jadi 10000 (10 detik)
-const intervalPeregangan = 30 * 60 * 1000; // 30 Menit dalam milidetik
+const intervalPeregangan = 5000; // 30 Menit dalam milidetik
 const durasiPaksa = 15; // 15 Detik pop-up muncul
 
 async function init() {
