@@ -1,7 +1,7 @@
-// GANTI LINK DI BAWAH INI DENGAN LINK MODELMU SENDIRI
-const URL = "https://teachablemachine.withgoogle.com/models/bsc2_-vUS/"; // <--
+// GANTI LINK DI BAWAH INI DENGAN LINK MODELMU
+const URL = "https://teachablemachine.withgoogle.com/models/bsc2_-vUS/";
 
-let model, webcam, ctx, labelContainer, maxPredictions;
+let model, webcam, ctx, maxPredictions;
 
 const workspace = document.getElementById("workspace");
 const statusText = document.getElementById("status-text");
@@ -12,16 +12,24 @@ const alarmSound = new Audio('alarm.mp3');
 alarmSound.loop = true;
 let alarmTimer = null;         
 let isPostureBad = false;      
-const waktuTungguAlarm = 5000; // 5000 = 5 detik tunggu sebelum alarm bunyi
+const waktuTungguAlarm = 5000; 
+
+// --- VARIABEL DASHBOARD WAKTU ---
+const sessionText = document.getElementById("session-timer");
+const countdownText = document.getElementById("countdown-timer");
+let waktuMulaiKerja = null;
+let waktuPereganganBerikutnya = null;
 
 // --- VARIABEL STRETCHING ---
 const stretchOverlay = document.getElementById("stretch-overlay");
 const stretchTimerText = document.getElementById("stretch-timer");
-// Kalau mau ngetes pop-upnya cepet, ubah angka di bawah jadi 10000 (10 detik)
-const intervalPeregangan = 5000; // 5 detik dalam milidetik
-const durasiPaksa = 15; // 15 Detik pop-up muncul
+const intervalPeregangan = 30 * 60 * 1000; // 30 Menit 
+const durasiPaksa = 15; // 15 Detik pop-up
 
 async function init() {
+    // Sembunyikan tombol mulai setelah diklik
+    document.getElementById("start-btn").style.display = "none";
+
     const modelURL = URL + "model.json";
     const metadataURL = URL + "metadata.json";
 
@@ -41,8 +49,12 @@ async function init() {
     
     statusText.innerText = "Sistem Aktif";
 
-    // Mulai hitung waktu untuk Pop-up Peregangan
-    mulaiJadwalPeregangan();
+    // --- MULAI PERHITUNGAN WAKTU ---
+    waktuMulaiKerja = Date.now();
+    waktuPereganganBerikutnya = Date.now() + intervalPeregangan;
+    
+    // Update tampilan jam setiap 1 detik
+    setInterval(updateDashboardWaktu, 1000);
 }
 
 async function loop(timestamp) {
@@ -65,14 +77,11 @@ async function predict() {
         }
     }
 
-    // --- LOGIKA INTERVENSI ---
-    // Pastikan nama kelas sesuai dengan model aslimu ("normal", "bungkuk", "terlaludekat")
     if (currentPosture === "normal") {
         statusText.innerText = "Normal - Aman";
         statusText.className = "status-aman";
         workspace.classList.remove("blur-effect");
         
-        // Batalkan alarm jika kembali normal sebelum 5 detik
         if (isPostureBad) {
             isPostureBad = false;         
             clearTimeout(alarmTimer);     
@@ -89,7 +98,6 @@ async function predict() {
             videoElem.pause();
         }
 
-        // Mulai hitung mundur 5 detik untuk membunyikan alarm
         if (!isPostureBad) {
             isPostureBad = true; 
             alarmTimer = setTimeout(() => {
@@ -114,21 +122,39 @@ function drawPose(pose) {
     }
 }
 
-// --- FUNGSI STRETCHING ENFORCER ---
-function mulaiJadwalPeregangan() {
-    setInterval(() => {
+// --- FUNGSI UPDATE DASHBOARD WAKTU ---
+function updateDashboardWaktu() {
+    const sekarang = Date.now();
+
+    // 1. Hitung Durasi Kerja (Jam:Menit:Detik)
+    const selisihKerja = Math.floor((sekarang - waktuMulaiKerja) / 1000);
+    const jamKerja = String(Math.floor(selisihKerja / 3600)).padStart(2, '0');
+    const menitKerja = String(Math.floor((selisihKerja % 3600) / 60)).padStart(2, '0');
+    const detikKerja = String(selisihKerja % 60).padStart(2, '0');
+    sessionText.innerText = `${jamKerja}:${menitKerja}:${detikKerja}`;
+
+    // 2. Hitung Mundur Peregangan (Menit:Detik)
+    const selisihPeregangan = Math.floor((waktuPereganganBerikutnya - sekarang) / 1000);
+    
+    if (selisihPeregangan <= 0) {
+        countdownText.innerText = "Sekarang!";
         aktifkanPereganganPaksa();
-    }, intervalPeregangan);
+    } else {
+        const menitPeregangan = String(Math.floor(selisihPeregangan / 60)).padStart(2, '0');
+        const detikPeregangan = String(selisihPeregangan % 60).padStart(2, '0');
+        countdownText.innerText = `${menitPeregangan}:${detikPeregangan}`;
+    }
 }
 
+// --- FUNGSI STRETCHING ENFORCER ---
 function aktifkanPereganganPaksa() {
+    // Reset waktu peregangan berikutnya agar tidak memicu pop-up terus menerus
+    waktuPereganganBerikutnya = Date.now() + intervalPeregangan + (durasiPaksa * 1000);
+
     let sisaWaktu = durasiPaksa; 
     stretchTimerText.innerText = sisaWaktu;
-    
-    // Munculkan Pop-up
     stretchOverlay.classList.remove("hidden");
     
-    // Matikan video 
     if (!videoElem.paused) {
         videoElem.pause();
     }
@@ -137,7 +163,6 @@ function aktifkanPereganganPaksa() {
         sisaWaktu--;
         stretchTimerText.innerText = sisaWaktu;
 
-        // Tutup Pop-up jika 15 detik selesai
         if (sisaWaktu <= 0) {
             clearInterval(hitungMundur); 
             stretchOverlay.classList.add("hidden"); 

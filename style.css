@@ -1,15 +1,86 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 20px;
-    background-color: #f4f4f9;
+    background-color: #f0f2f5;
+    color: #333;
 }
 
-header { text-align: center; margin-bottom: 20px; }
+/* --- DASHBOARD & MASKOT --- */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 15px 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+
+.mascot-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.mascot-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid #1e293b;
+}
+
+.mascot-text h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #1e293b;
+}
+
+.mascot-text p {
+    margin: 5px 0 0 0;
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+/* --- TIMER BOARD --- */
+.timer-board {
+    display: flex;
+    gap: 20px;
+}
+
+.timer-card {
+    background: #1e293b;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 140px;
+}
+
+.timer-card span {
+    font-size: 0.8rem;
+    color: #cbd5e1;
+    margin-bottom: 5px;
+}
+
+.timer-card strong {
+    font-size: 1.3rem;
+    letter-spacing: 1px;
+}
+
+/* --- STATUS & WORKSPACE --- */
+.status-wrapper {
+    text-align: center;
+    margin-bottom: 20px;
+}
 
 #status-bar {
-    font-size: 1.2rem; font-weight: bold; padding: 10px;
-    background-color: #e0e0e0; border-radius: 8px; display: inline-block;
+    font-size: 1.2rem; font-weight: bold; padding: 12px 25px;
+    background-color: white; border-radius: 30px; display: inline-block;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
 .status-aman { color: #28a745; }
@@ -18,26 +89,33 @@ header { text-align: center; margin-bottom: 20px; }
 .container { display: flex; gap: 20px; align-items: flex-start; }
 
 .camera-section {
-    flex: 1; background: white; padding: 15px; border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center;
+    flex: 1; background: white; padding: 20px; border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center;
 }
 
+button#start-btn {
+    background: #3b82f6; color: white; border: none;
+    padding: 10px 20px; font-size: 1rem; border-radius: 8px;
+    cursor: pointer; transition: 0.3s; margin-bottom: 15px;
+}
+
+button#start-btn:hover { background: #2563eb; }
+
 .workspace {
-    flex: 2; background: white; padding: 20px; border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: filter 0.4s ease; 
+    flex: 2; background: white; padding: 20px; border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: filter 0.4s ease; 
 }
 
 .blur-effect {
     filter: blur(12px); pointer-events: none;
 }
 
-/* --- STYLING UNTUK POP-UP PEREGANGAN --- */
+/* --- POP-UP PEREGANGAN --- */
 #stretch-overlay {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background-color: rgba(0, 0, 0, 0.95); /* Background hitam gelap */
+    background-color: rgba(0, 0, 0, 0.95);
     color: white; display: flex; justify-content: center; align-items: center;
-    z-index: 9999; /* Mengunci seluruh layar */
-    text-align: center;
+    z-index: 9999; text-align: center;
 }
 
 .stretch-content {
