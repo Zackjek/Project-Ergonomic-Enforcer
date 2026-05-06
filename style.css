@@ -1,48 +1,243 @@
+/* Import Font Modern dari Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+/* --- Variabel Warna (Color Rationale) --- */
+:root {
+    --primary-color: #4f46e5;   /* Indigo - untuk elemen aksi utama */
+    --primary-hover: #4338ca;
+    --bg-color: #f8fafc;        /* Slate Light - warna background halaman */
+    --card-bg: #ffffff;         /* Putih - untuk card konten */
+    --text-main: #1e293b;       /* Slate Dark - teks utama */
+    --text-muted: #64748b;      /* Slate Medium - teks pendukung */
+    --radius: 16px;             /* Sudut membulat */
+}
+
+/* --- Pengaturan Dasar --- */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
     margin: 0;
-    padding: 20px;
-    background-color: #f4f4f9;
+    padding: 40px 20px;
+    box-sizing: border-box;
 }
 
-header { text-align: center; margin-bottom: 20px; }
+header {
+    text-align: center;
+    margin-bottom: 40px;
+}
 
+h1 {
+    font-weight: 700;
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    letter-spacing: -0.5px;
+}
+
+h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+}
+
+/* --- Indikator Status --- */
 #status-bar {
-    font-size: 1.2rem; font-weight: bold; padding: 10px;
-    background-color: #e0e0e0; border-radius: 8px; display: inline-block;
+    display: inline-block;
+    background-color: #e2e8f0;
+    color: var(--text-muted);
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
 }
 
-.status-aman { color: #28a745; }
-.status-bahaya { color: #dc3545; }
+/* Class tambahan untuk mengubah warna status dari JavaScript */
+.status-aman {
+    background-color: #dcfce7 !important;
+    color: #166534 !important;
+}
 
-.container { display: flex; gap: 20px; align-items: flex-start; }
+.status-bahaya {
+    background-color: #fee2e2 !important;
+    color: #991b1b !important;
+}
+
+/* --- Layout Utama (Flexbox) --- */
+.container {
+    display: flex;
+    flex-wrap: wrap; /* Agar responsif jika layar mengecil */
+    gap: 30px;
+    max-width: 1100px;
+    margin: 0 auto;
+    align-items: flex-start;
+}
+
+/* --- Desain Card (Kotak Putih) --- */
+.camera-section, .workspace {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 30px;
+    /* Memberikan efek melayang yang lembut */
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+}
 
 .camera-section {
-    flex: 1; background: white; padding: 15px; border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center;
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .workspace {
-    flex: 2; background: white; padding: 20px; border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: filter 0.4s ease; 
+    flex: 2;
+    min-width: 400px;
 }
 
+/* --- Styling Tombol (Call to Action) --- */
+button {
+    background-color: var(--primary-color);
+    color: white;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 14px 24px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+}
+
+button:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(79, 70, 229, 0.3);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* --- Area Placeholder Kamera --- */
+#camera-container {
+    width: 100%;
+    aspect-ratio: 1/1; /* Memastikan rasio kotak sempurna (300x300) */
+    background-color: #f1f5f9;
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Memastikan canvas mengisi kontainer dengan rapi */
+canvas {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+/* --- Area Video --- */
+#learning-video {
+    border-radius: 12px;
+    margin-top: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Efek Blur dari JavaScript --- */
 .blur-effect {
-    filter: blur(12px); pointer-events: none;
+    filter: blur(10px);
+    transition: filter 0.3s ease;
 }
 
-/* --- STYLING UNTUK POP-UP PEREGANGAN --- */
+/* --- Pop-Up Overlay --- */
 #stretch-overlay {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background-color: rgba(0, 0, 0, 0.95); /* Background hitam gelap */
-    color: white; display: flex; justify-content: center; align-items: center;
-    z-index: 9999; /* Mengunci seluruh layar */
-    text-align: center;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.9); /* Latar gelap transparan */
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#stretch-overlay.hidden {
+    display: none;
 }
 
 .stretch-content {
-    background: #2f3542; padding: 40px; border-radius: 15px;
-    border: 3px solid #ff4757; box-shadow: 0 0 20px rgba(255, 71, 87, 0.5);
+    background: white;
+    padding: 50px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
 }
 
-.hidden { display: none !important; }
+/* --- Styling Panel Statistik (Kiri) --- */
+.stats-card {
+    margin-top: 25px;
+    width: 100%;
+    background-color: #f1f5f9; /* Warna abu-abu sangat muda */
+    border-radius: 12px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.stats-card h3 {
+    font-size: 1rem;
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--text-main);
+    border-bottom: 1px solid #cbd5e1;
+    padding-bottom: 8px;
+}
+
+.stats-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.stats-card li {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+
+.stats-card li span:last-child {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* --- Styling Tips Ergonomis (Kanan) --- */
+.tips-card {
+    margin-top: 25px;
+    background-color: #e0e7ff; /* Biru/Indigo sangat muda */
+    border-radius: 12px;
+    padding: 20px;
+    border-left: 5px solid var(--primary-color); /* Garis aksen di sebelah kiri */
+}
+
+.tips-card h3 {
+    font-size: 1.1rem;
+    margin-top: 0;
+    margin-bottom: 12px;
+    color: var(--primary-hover);
+}
+
+.tips-card ul {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    line-height: 1.6; /* Jarak antar baris teks agar nyaman dibaca */
+}
